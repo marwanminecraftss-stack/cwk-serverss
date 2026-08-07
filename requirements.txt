@@ -4,3 +4,4 @@ flask_login
 flask_bcrypt
 schedule
 discord-webhook
+gunicorn
