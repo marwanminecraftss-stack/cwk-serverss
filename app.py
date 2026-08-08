@@ -46,14 +46,21 @@ bcrypt = Bcrypt(app)
 
 login_manager = LoginManager(app)
 login_manager.login_view = '/'
+class Base(DeclarativeBase):
+    pass
+
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///cardwarskingdom.db"
+db = SQLAlchemy(model_class=Base)
+db.init_app(app)
+
+with app.app_context():
+    db.create_all()
 
 class Base(DeclarativeBase):
   pass
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///cardwarskingdom.db"
 db = SQLAlchemy(model_class=Base)
 db.init_app(app)
-with app.app_context():
-    db.create_all()
 
 badcharaters = ['/', '\\', ':', '*', '?', '"', '<', '>', '|', ";", "%", "^", "&", "(", ")", "{", "}", "[", "]", ".", ",", "'", "`", "!", "$", "#", "@", "+", "="]
 
@@ -905,14 +912,17 @@ def UserAction2():
 	
 	UpdateLastOnline(clientData["player_id"])
  
-	    # Check if an event was sent
-     db_user = Player.query.filter_by(username=clientData["player_id"]).first()
-     if db_user is None:
-         db_user = Player(username=clientData["player_id"])
-         db.session.add(db_user)
-         db.session.commit()
+	    #Check if an event was sent
+    if "evt" in clientData:
+        db_user = Player.query.filter_by(username=clientData["player_id"]).first()
+        if db_user is None:
+            db_user = Player(username=clientData["player_id"])
+            db.session.add(db_user)
+            db.session.commit()
 
-    return jsonify({"success": True})
+		
+		FreeHardCurrency = int(clientData["fr"])
+		df = int(clientData["df"])
   
 		finalamount = FreeHardCurrency + df
 
