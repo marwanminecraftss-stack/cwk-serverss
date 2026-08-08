@@ -1,3 +1,4 @@
+import os
 import hmac
 import hashlib
 import base64
@@ -50,7 +51,9 @@ login_manager.login_view = '/'
 
 class Base(DeclarativeBase):
   pass
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///cardwarskingdom.db"
+database_url = os.environ.get('DATABASE_URL')
+if database_url and database_url.startswith("postgres://"):
+    database_url = database_url.replace("postgres://", "postgresql://", 1)
 db = SQLAlchemy(model_class=Base)
 db.init_app(app)
 
