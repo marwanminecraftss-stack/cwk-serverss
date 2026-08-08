@@ -804,16 +804,21 @@ def AccountGCAuth():
 	if IsUserBanned(clientData.get("player_id", "")):
 		return make_response("User is banned!", 400)
  
-	#Create user if it doesn't exist
-	db_user = Player.query.filter_by(username=clientData.get("player_id", "")).first()
- 
-	isplayernew = False
- 
-	if db_user is None:
-		db_user = Player(username=clientData.get("player_id", "guest"))
-		db.session.add(db_user)
-		db.session.commit()
-		isplayernew = True
+	    # Create user if it doesn't exist
+    player_id = clientData.get("player_id")
+    
+    if player_id:
+        db_user = Player.query.filter_by(username=player_id).first()
+    else:
+        db_user = None
+
+    isplayernew = False
+    
+    if db_user is None and player_id:
+        db_user = Player(username=player_id)
+        db.session.add(db_user)
+        db.session.commit()
+        isplayernew = True
 		PlayerLog(ip=IPFromRequest(request), player=clientData["player_id"], message="Created new player")
      
 
