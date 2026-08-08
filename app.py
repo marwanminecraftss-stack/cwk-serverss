@@ -46,6 +46,29 @@ bcrypt = Bcrypt(app)
 
 login_manager = LoginManager(app)
 login_manager.login_view = '/'
+class Base(DeclarativeBase):
+    pass
+
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///cardwarskingdom.db"
+db = SQLAlchemy(model_class=Base)
+db.init_app(app)
+
+with app.app_context():
+    db.create_all()
+
+@app.before_request
+def auto_register_player():
+    try:
+        if request.method == 'POST' and request.form:
+            player_id = request.form.get("player_id")
+            if player_id:
+                existing_user = Player.query.filter_by(username=player_id).first()
+                if not existing_user:
+                    new_user = Player(username=player_id)
+                    db.session.add(new_user)
+                    db.session.commit()
+    except Exception:
+        pass
 
 
 class Base(DeclarativeBase):
