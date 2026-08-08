@@ -69,16 +69,6 @@ def auto_register_player():
                     db.session.commit()
     except Exception:
         pass
-
-
-class Base(DeclarativeBase):
-  pass
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///cardwarskingdom.db"
-db = SQLAlchemy(model_class=Base)
-db.init_app(app)
-
-with app.app_context():
-    db.create_all()
 	
 badcharaters = ['/', '\\', ':', '*', '?', '"', '<', '>', '|', ";", "%", "^", "&", "(", ")", "{", "}", "[", "]", ".", ",", "'", "`", "!", "$", "#", "@", "+", "="]
 
