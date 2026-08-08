@@ -909,8 +909,11 @@ def UserAction2():
 	#Check if an event was sent
 	if "evt" in clientData:
 		db_user = Player.query.filter_by(username=clientData["player_id"]).first()
-		if db_user is None:
-			return make_response("No player found!", 404)
+		        if db_user is None:
+            db_user = Player(username=clientData["player_id"])
+            db.session.add(db_user)
+            db.session.commit()
+
 		
 		FreeHardCurrency = int(clientData["fr"])
 		df = int(clientData["df"])
