@@ -896,29 +896,38 @@ def get_hash_string(source_value, key):
 
 @app.route("/persist/user_action2/", methods=['POST'])
 def UserAction2():
-	clientData = parse_qs(request.get_data().decode('utf-8'))
-	clientData = {k: v[0] if len(v) == 1 else v for k, v in clientData.items()}
- 
-	if IsUserBanned(clientData["player_id"], IPFromRequest(request)):
+	try:
+		clientData = parse_qs(request.get_data().decode('utf-8'))
+		clientData = {k: v[0] if len(v) == 1 else v for k, v in clientData.items()}
+	except Exception:
+		clientData = {}
+	
+	player_id = clientData.get("player_id")
+	if player_id and IsUserBanned(player_id, IPFromRequest(request)):
 		return make_response("User is banned!", 400)
 	
-	UpdateLastOnline(clientData["player_id"])
+	if player_id:
+		UpdateLastOnline(player_id)
  
 	#Check if an event was sent
-	if "evt" in clientData:
-		db_user = Player.query.filter_by(username=clientData["player_id"]).first()
+	if "evt" in clientData and player_id:
+		db_user = Player.query.filter_by(username=player_id).first()
 		if db_user is None:
-			return make_response("No player found!", 404)
+			return jsonify({"success": True})
 		
-		FreeHardCurrency = int(clientData["fr"])
-		df = int(clientData["df"])
+		try:
+			FreeHardCurrency = int(clientData.get("fr", 0))
+			df = int(clientData.get("df", 0))
+		except (ValueError, TypeError):
+			FreeHardCurrency = 0
+			df = 0
   
 		finalamount = FreeHardCurrency + df
 
-		PlayerLog(IPFromRequest(request), clientData["player_id"], f"User Action: {clientData['evt']}\nFree Hard Currency: {FreeHardCurrency}\nDF: {df}\nFinal Amount: {finalamount}")
+		PlayerLog(IPFromRequest(request), player_id, f"User Action: {clientData['evt']}\nFree Hard Currency: {FreeHardCurrency}\nDF: {df}\nFinal Amount: {finalamount}")
   
-		key = "5424498w34tiowhtgoae0tu4iksdf4_4" + clientData["player_id"] + "650"
-		handle = get_hash_string(clientData["player_id"], key)
+		key = "5424498w34tiowhtgoae0tu4iksdf4_4" + player_id + "650"
+		handle = get_hash_string(player_id, key)
 
 		data = {
 			"success": True,
