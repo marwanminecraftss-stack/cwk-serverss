@@ -50,7 +50,8 @@ login_manager.login_view = '/'
 
 class Base(DeclarativeBase):
   pass
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///cardwarskingdom.db"
+import os
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL", "sqlite:///cardwarkingdom.db")
 db = SQLAlchemy(model_class=Base)
 db.init_app(app)
 
