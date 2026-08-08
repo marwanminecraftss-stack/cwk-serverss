@@ -1536,10 +1536,10 @@ if __name__ == '__main__':
 	#create version.txt and android_version.txt if they don't exist
 	if not os.path.exists("data/persist/version.txt"):
 		with open("data/persist/version.txt", "w") as f:
-			f.write("1.0.0")
+			f.write("1.19.4")
 	if not os.path.exists("data/persist/android_version.txt"):
 		with open("data/persist/android_version.txt", "w") as f:
-			f.write("1.0.0")
+			f.write("1.19.4")
 	
 	app.run(debug=args.debug, port=args.port)
 
