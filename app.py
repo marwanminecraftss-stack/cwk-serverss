@@ -905,14 +905,14 @@ def UserAction2():
 	
 	UpdateLastOnline(clientData["player_id"])
  
-	    #Check if an event was sent
+	    # Check if an event was sent
     db_user = Player.query.filter_by(username=clientData["player_id"]).first()
     if db_user is None:
         db_user = Player(username=clientData["player_id"])
         db.session.add(db_user)
         db.session.commit()
-		FreeHardCurrency = int(clientData["fr"])
-		df = int(clientData["df"])
+
+    return jsonify({"success": True})
   
 		finalamount = FreeHardCurrency + df
 
