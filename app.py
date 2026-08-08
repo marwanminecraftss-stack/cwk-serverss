@@ -1356,3 +1356,6 @@ if __name__ == '__main__':
 	scheduler_thread.start()
 
 	app.run(host='0.0.0.0', debug=args.debug, port=args.port)
+
+with app.app_context():
+    db.create_all()
