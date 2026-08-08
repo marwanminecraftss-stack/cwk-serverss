@@ -1,4 +1,3 @@
-import os
 import hmac
 import hashlib
 import base64
@@ -51,12 +50,7 @@ login_manager.login_view = '/'
 
 class Base(DeclarativeBase):
   pass
-database_url = os.environ.get('DATABASE_URL')
-if database_url and database_url.startswith("postgres://"):
-    database_url = database_url.replace("postgres://", "postgresql://", 1)
-
-app.config["SQLALCHEMY_DATABASE_URI"] = database_url or "sqlite:///cardwarskingdom.db"
-
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///cardwarskingdom.db"
 db = SQLAlchemy(model_class=Base)
 db.init_app(app)
 
@@ -1542,10 +1536,10 @@ if __name__ == '__main__':
 	#create version.txt and android_version.txt if they don't exist
 	if not os.path.exists("data/persist/version.txt"):
 		with open("data/persist/version.txt", "w") as f:
-			f.write("1.0.0")
+			f.write("1.19.4")
 	if not os.path.exists("data/persist/android_version.txt"):
 		with open("data/persist/android_version.txt", "w") as f:
-			f.write("1.0.0")
+			f.write("1.19.4")
 	
 	app.run(debug=args.debug, port=args.port)
 
