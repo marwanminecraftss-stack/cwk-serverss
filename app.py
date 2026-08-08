@@ -59,14 +59,14 @@ with app.app_context():
 @app.before_request
 def auto_register_player():
     try:
-        if request.method == 'POST' and request.form:
-            player_id = request.form.get("player_id")
-            if player_id:
-                existing_user = Player.query.filter_by(username=player_id).first()
-                if not existing_user:
-                    new_user = Player(username=player_id)
-                    db.session.add(new_user)
-                    db.session.commit()
+        data = request.form or request.get_json(silent=True) or {}
+        player_id = data.get("player_id") or data.get("username") or data.get("id")
+        if player_id:
+            existing_user = Player.query.filter_by(username=player_id).first()
+            if not existing_user:
+                new_user = Player(username=player_id)
+                db.session.add(new_user)
+                db.session.commit()
     except Exception:
         pass
 	
