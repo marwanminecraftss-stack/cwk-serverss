@@ -46,30 +46,14 @@ bcrypt = Bcrypt(app)
 
 login_manager = LoginManager(app)
 login_manager.login_view = '/'
-class Base(DeclarativeBase):
-    pass
 
+
+class Base(DeclarativeBase):
+  pass
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///cardwarskingdom.db"
 db = SQLAlchemy(model_class=Base)
 db.init_app(app)
 
-with app.app_context():
-    db.create_all()
-
-@app.before_request
-def auto_register_player():
-    try:
-        data = request.form or request.get_json(silent=True) or {}
-        player_id = data.get("player_id") or data.get("username") or data.get("id")
-        if player_id:
-            existing_user = Player.query.filter_by(username=player_id).first()
-            if not existing_user:
-                new_user = Player(username=player_id)
-                db.session.add(new_user)
-                db.session.commit()
-    except Exception:
-        pass
-	
 badcharaters = ['/', '\\', ':', '*', '?', '"', '<', '>', '|', ";", "%", "^", "&", "(", ")", "{", "}", "[", "]", ".", ",", "'", "`", "!", "$", "#", "@", "+", "="]
 
 maintenance = False
@@ -798,33 +782,28 @@ def AccountGCAuth():
 	clientData = parse_qs(request.get_data().decode('utf-8'))
 	clientData = {k: v[0] if len(v) == 1 else v for k, v in clientData.items()}
  
-	if InvalidUsername(clientData.get("player_id", "")):
+	if InvalidUsername(clientData["player_id"]):
 		return make_response("Invalid Username!", 400)
 
-	if IsUserBanned(clientData.get("player_id", "")):
+	if IsUserBanned(clientData["player_id"], IPFromRequest(request)):
 		return make_response("User is banned!", 400)
  
-	    # Create user if it doesn't exist
-    player_id = clientData.get("player_id")
-    
-    if player_id:
-        db_user = Player.query.filter_by(username=player_id).first()
-    else:
-        db_user = None
-
-    isplayernew = False
-    
-    if db_user is None and player_id:
-        db_user = Player(username=player_id)
-        db.session.add(db_user)
-        db.session.commit()
-        isplayernew = True
+	#Create user if it doesn't exist
+	db_user = Player.query.filter_by(username=clientData["player_id"]).first()
+ 
+	isplayernew = False
+ 
+	if db_user is None:
+		db_user = Player(username=clientData["player_id"])
+		db.session.add(db_user)
+		db.session.commit()
+		isplayernew = True
 		PlayerLog(ip=IPFromRequest(request), player=clientData["player_id"], message="Created new player")
      
 
 	data = {
 		"data": {
-			"user_id": clientData.get("player_id", "unknown"),
+			"user_id": clientData["player_id"],
 			"is_new": isplayernew
 		}
 	}
