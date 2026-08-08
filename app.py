@@ -798,19 +798,19 @@ def AccountGCAuth():
 	clientData = parse_qs(request.get_data().decode('utf-8'))
 	clientData = {k: v[0] if len(v) == 1 else v for k, v in clientData.items()}
  
-	if InvalidUsername(clientData["player_id"]):
+	if InvalidUsername(clientData.get("player_id", "")):
 		return make_response("Invalid Username!", 400)
 
-	if IsUserBanned(clientData["player_id"], IPFromRequest(request)):
+	if IsUserBanned(clientData.get("player_id", "")):
 		return make_response("User is banned!", 400)
  
 	#Create user if it doesn't exist
-	db_user = Player.query.filter_by(username=clientData["player_id"]).first()
+	db_user = Player.query.filter_by(username=clientData.get("player_id", "")).first()
  
 	isplayernew = False
  
 	if db_user is None:
-		db_user = Player(username=clientData["player_id"])
+		db_user = Player(username=clientData.get("player_id", "guest"))
 		db.session.add(db_user)
 		db.session.commit()
 		isplayernew = True
@@ -819,7 +819,7 @@ def AccountGCAuth():
 
 	data = {
 		"data": {
-			"user_id": clientData["player_id"],
+			"user_id": clientData.get("player_id", "unknown"),
 			"is_new": isplayernew
 		}
 	}
