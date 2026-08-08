@@ -5,3 +5,4 @@ flask_bcrypt
 schedule
 discord-webhook
 gunicorn
+psycopg2-binary
