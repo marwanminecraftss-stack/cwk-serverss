@@ -912,9 +912,6 @@ def UserAction2():
         db_user = Player(username=clientData["player_id"])
         db.session.add(db_user)
         db.session.commit()
-
-
-		
 		FreeHardCurrency = int(clientData["fr"])
 		df = int(clientData["df"])
   
